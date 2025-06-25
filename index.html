@@ -43,7 +43,7 @@
       box-shadow: 0 0 5px rgba(76,175,80,0.5);
     }
     button {
-      margin-top: 1.8rem;
+      margin-top: 1.5rem;
       padding: 1rem;
       width: 100%;
       background-color: #4CAF50;
@@ -75,6 +75,13 @@
       font-weight: 700;
       white-space: pre-line;
     }
+    #resetButton {
+      background-color: #ccc;
+      color: #000;
+    }
+    #resetButton:hover {
+      background-color: #bbb;
+    }
     @media (max-width: 400px) {
       body {
         padding: 1rem;
@@ -100,27 +107,29 @@
 </head>
 <body>
 
-  <h2>Fassadenanstrich Rechner</h2>
+  <h2>Fassadenanstrich-Rechner</h2>
 
-  <label for="qm">Fläche in Quadratmetern (qm):</label>
+  <label for="qm">Fl&auml;che in Quadratmetern (qm):</label>
   <input type="number" id="qm" min="0" step="0.1" />
 
   <label for="mlProQm">Verbrauch in ml pro qm:</label>
   <input type="number" id="mlProQm" min="0" step="0.1" />
 
-  <button onclick="berechneVerbrauch()">Zwischenergebnis anzeigen</button>
+  <button onclick="berechneVerbrauch()">Farbverbrauch berechnen</button>
 
   <div class="result" id="literErgebnis"></div>
 
-  <label for="preisProLiter" style="display:none;" id="preisLabel">Preis pro Liter (in €):</label>
+  <label for="preisProLiter" style="display:none;" id="preisLabel">Preis pro Liter (in â‚¬):</label>
   <input type="number" id="preisProLiter" min="0" step="0.01" style="display:none;" />
 
-  <label for="gebinde" style="display:none;" id="gebindeLabel">Gebindegröße in Litern:</label>
+  <label for="gebinde" style="display:none;" id="gebindeLabel">Gebindegr&ouml;ÃŸe in Litern:</label>
   <input type="number" id="gebinde" min="0.1" step="0.1" style="display:none;" />
 
   <button onclick="berechneEimer()" style="display:none;" id="eimerButton">Anzahl der Farbeimer berechnen</button>
 
   <div id="eimerErgebnis"></div>
+
+  <button onclick="location.reload()" id="resetButton">Zur&uuml;cksetzen</button>
 
   <script>
     let liter = 0;
@@ -130,22 +139,22 @@
       const mlProQm = parseFloat(document.getElementById("mlProQm").value);
 
       if (isNaN(qm) || isNaN(mlProQm) || qm <= 0 || mlProQm <= 0) {
-        alert("Bitte gültige Werte für qm und ml/qm eingeben.");
+        alert("Bitte g&uuml;ltige Werte fÃ¼r Fl&auml;che und Verbrauch eingeben.");
         return;
       }
 
       liter = (qm * mlProQm) / 1000;
-      document.getElementById("literErgebnis").innerText = `Benötigte Farbmenge: ${liter.toFixed(2)} Liter`;
+      document.getElementById("literErgebnis").innerText = `Ben&ouml;tigte Farbmenge: ${liter.toFixed(2)} Liter`;
 
       document.getElementById("preisLabel").style.display = "block";
       document.getElementById("preisProLiter").style.display = "block";
-
       document.getElementById("gebindeLabel").style.display = "block";
       document.getElementById("gebinde").style.display = "block";
-
       document.getElementById("eimerButton").style.display = "block";
 
       document.getElementById("eimerErgebnis").innerText = "";
+
+      document.getElementById("preisProLiter").focus();
     }
 
     function berechneEimer() {
@@ -153,21 +162,26 @@
       const preisProLiter = parseFloat(document.getElementById("preisProLiter").value);
 
       if (isNaN(gebinde) || gebinde <= 0) {
-        alert("Bitte eine gültige Gebindegröße eingeben.");
+        alert("Bitte eine g&uuml;ltige Gebindegr&ouml;ÃŸe eingeben.");
         return;
       }
       if (isNaN(preisProLiter) || preisProLiter < 0) {
-        alert("Bitte einen gültigen Preis pro Liter eingeben.");
+        alert("Bitte einen g&uuml;ltigen Preis pro Liter eingeben.");
         return;
       }
 
       const eimer = Math.ceil(liter / gebinde);
-      const gesamtpreis = (eimer * gebinde * preisProLiter).toFixed(2);
+      const formatter = new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: 'EUR'
+      });
+      const gesamtpreis = formatter.format(eimer * gebinde * preisProLiter);
 
       document.getElementById("eimerErgebnis").innerText =
-        `Anzahl benötigter Eimer: ${eimer}\nGesamtpreis: ${gesamtpreis} €`;
+        `Anzahl benÃ¶tigter Eimer: ${eimer}\nGesamtpreis: ${gesamtpreis}`;
     }
   </script>
 
 </body>
 </html>
+
